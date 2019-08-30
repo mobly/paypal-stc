@@ -10,8 +10,9 @@ class Ipn
     /**
      * @param Client $client
      * @param $data
+     * @param $url
      * @return string
-     * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function ack(Client $client, $data, $url)
     {

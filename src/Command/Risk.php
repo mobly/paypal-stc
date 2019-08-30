@@ -8,7 +8,6 @@ use Mobly\PaypalStc\Sdk\Entities\Sender;
 use Mobly\PaypalStc\Sdk\Entities\TransferSalesOrder;
 use Mobly\PaypalStc\Sdk\Factory\Sender\Customer as SenderCustomerFactory;
 use Mobly\PaypalStc\Sdk\Factory\Sender\Address as SenderAddressFactory;
-use Mobly\PaypalStc\Sdk\Factory\Receiver\Address as ReceiverAddress;
 
 class Risk
 {
@@ -29,33 +28,26 @@ class Risk
     protected $trackingId;
 
     /**
-     * @var
-     */
-    protected $trustedBuyerConfig;
-
-    /**
      * Risk constructor.
-     * @param $paymentExtConfig
+     * @param null $paypalPlusMerchantId
      * @param $trackingId
      */
-    public function __construct($paymentExtConfig, $trackingId)
+    public function __construct($paypalPlusMerchantId, $trackingId)
     {
-        $this->merchantId = $paymentExtConfig['paypal_plus_merchant_id'] ?? null;
-        $this->trustedBuyerConfig = $paymentExtConfig['paypal_trusted_buyer'] ?? null;
-
+        $this->merchantId = $paypalPlusMerchantId;
         $this->trackingId = $trackingId;
     }
 
     /**
      * @param Client $client
      * @param TransferSalesOrder $order
-     * @param $config
-     * @return \Zend_Http_Response
-     * @throws \Zend_Http_Client_Exception
+     * @param Receiver $receiver
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function registerRisk(Client $client, TransferSalesOrder $order, $config)
+    public function registerRisk(Client $client, TransferSalesOrder $order, Receiver $receiver)
     {
-        $data = $this->getData($order, $config);
+        $data = $this->getData($order, $receiver);
 
         $log = [];
         $log['request'] = [
@@ -75,12 +67,13 @@ class Risk
             'file' => 'paypalplus_communication.log'
         ];
 
-        return $response;
+        return [$response, $log];
     }
 
     /**
      * @param Client $client
-     * @return bool
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function retrieveRisk(Client $client)
     {
@@ -91,29 +84,21 @@ class Risk
 
     /**
      * @param TransferSalesOrder $order
-     * @param $config
+     * @param Receiver $receiver
      * @return array
      */
-    public function getData(TransferSalesOrder $order, $config)
+    public function getData(TransferSalesOrder $order, Receiver $receiver)
     {
         $sender = new Sender();
-        $receiver = new Receiver();
 
         $sender->setSenderSignupId($order->getUserHostAddress());
-        $receiver->setCdStringOne(
-            $this->customerHasOrders(
-                $order->getIdCustomer()
-            )
-        );
+        $receiver->setCdStringOne($order->getCustomerHasOrders());
 
         $customer = new SenderCustomerFactory();
         $address = new SenderAddressFactory();
 
-        $receiverFactory = new ReceiverAddress($config);
-
         $customer->attach($order, $sender);
         $address->attach($order, $sender);
-        $receiverFactory->attach($order, $receiver);
 
         $data = array_merge($sender->toArray(), $receiver->toArray());
 
@@ -136,39 +121,6 @@ class Risk
     public function getUri()
     {
         return sprintf(self::ENDPOINT_V1, $this->merchantId, $this->trackingId);
-    }
-
-    /**
-     * @param null $idCustomer
-     * @return int
-     */
-    private function customerHasOrders($idCustomer = null)
-    {
-        if ($this->trustedBuyerConfig == '0' || $this->trustedBuyerConfig == '1') {
-            return (int) $this->trustedBuyerConfig;
-        }
-
-        if (empty($idCustomer)) {
-            return 0;
-        }
-
-        $orders = \Session::get('customer_orders');
-
-        if (!empty($orders) && $orders instanceof \Transfer_Sales_OrderCollection && $orders->isFilled()) {
-            return $orders->count() ? 1 : 0;
-        }
-
-        $adapter = \GenericModel::getAdapterByName('BobAdapter');
-        $bobResult = $adapter->get('CustomerOrders', false, false, array('customerId' => $idCustomer, 'fk_store' => 1));
-
-        if ($bobResult->isSuccess()) {
-            $orders = $bobResult->getResultData();
-            \Session::add('customer_orders', $orders);
-
-            return $orders->count() ? 1 : 0;
-        }
-
-        return 0;
     }
 
 }

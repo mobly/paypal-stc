@@ -9,10 +9,7 @@
   },
   "require": {
     "php": ">=5.4",
-    "guzzlehttp/guzzle": "^6.3",
-    "paypal/merchant-sdk-php": "~3.0",
-    "paypal/sdk-core-php": "2.5.6 as dev-master#v2.5.6",
-    "paypal/rest-api-sdk-php": "^1.13"
+    "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
     "monolog/monolog": "^1.24"

@@ -5,8 +5,6 @@ namespace Mobly\PaypalStc\Sdk\Entities;
 
 class TransferSalesOrder extends AbstractEntity
 {
-    protected $idCustomer;
-
     protected $firstName;
 
     protected $lastName;
@@ -37,21 +35,7 @@ class TransferSalesOrder extends AbstractEntity
 
     protected $userHostAddress;
 
-    /**
-     * @return mixed
-     */
-    public function getIdCustomer()
-    {
-        return $this->idCustomer;
-    }
-
-    /**
-     * @param mixed $idCustomer
-     */
-    public function setIdCustomer($idCustomer)
-    {
-        $this->idCustomer = $idCustomer;
-    }
+    protected $customerHasOrders;
 
     /**
      * @return mixed
@@ -293,6 +277,20 @@ class TransferSalesOrder extends AbstractEntity
         $this->userHostAddress = $userHostAddress;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCustomerHasOrders()
+    {
+        return $this->customerHasOrders;
+    }
 
-
+    /**
+     * @param mixed $customerHasOrders
+     */
+    public function setCustomerHasOrders($customerHasOrders)
+    {
+        $this->customerHasOrders = $customerHasOrders;
+    }
+    
 }
