@@ -3,11 +3,7 @@
 namespace Mobly\PaypalStc\Sdk\Command;
 
 use Mobly\PaypalStc\Sdk\Client;
-use Mobly\PaypalStc\Sdk\Entities\Receiver;
-use Mobly\PaypalStc\Sdk\Entities\Sender;
-use Mobly\PaypalStc\Sdk\Entities\TransferSalesOrder;
-use Mobly\PaypalStc\Sdk\Factory\Sender\Customer as SenderCustomerFactory;
-use Mobly\PaypalStc\Sdk\Factory\Sender\Address as SenderAddressFactory;
+use Mobly\PaypalStc\Sdk\Entities\Transaction;
 
 class Risk
 {
@@ -40,14 +36,13 @@ class Risk
 
     /**
      * @param Client $client
-     * @param TransferSalesOrder $order
-     * @param Receiver $receiver
+     * @param Transaction $transaction
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function registerRisk(Client $client, TransferSalesOrder $order, Receiver $receiver)
+    public function registerRisk(Client $client, Transaction $transaction)
     {
-        $data = $this->getData($order, $receiver);
+        $data = $this->getData($transaction);
 
         $log = [];
         $log['request'] = [
@@ -83,24 +78,15 @@ class Risk
     }
 
     /**
-     * @param TransferSalesOrder $order
-     * @param Receiver $receiver
+     * @param Transaction $transaction
      * @return array
      */
-    public function getData(TransferSalesOrder $order, Receiver $receiver)
+    public function getData(Transaction $transaction)
     {
-        $sender = new Sender();
-
-        $sender->setSenderSignupId($order->getUserHostAddress());
-        $receiver->setCdStringOne($order->getCustomerHasOrders());
-
-        $customer = new SenderCustomerFactory();
-        $address = new SenderAddressFactory();
-
-        $customer->attach($order, $sender);
-        $address->attach($order, $sender);
-
-        $data = array_merge($sender->toArray(), $receiver->toArray());
+        $data = array_merge(
+            $transaction->getSender()->toArray(),
+            $transaction->getReceiver()->toArray()
+        );
 
         $stc = [];
         foreach ($data as $key => $value) {
@@ -122,5 +108,4 @@ class Risk
     {
         return sprintf(self::ENDPOINT_V1, $this->merchantId, $this->trackingId);
     }
-
 }
