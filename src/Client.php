@@ -83,16 +83,18 @@ class Client extends AbstractClient
     {
         try {
             $url = 'https://api.sandbox.paypal.com/v1/risk/transaction-contexts/4EQA63KMCLY2N/11844533335';
+            $token = 'A21AAGwar4LkLz2pe9eAZ_AbXHQYowCRhXOxxT1uD8oaA23NzDeR-pK4xkWIh3_t0BWmLkjso8B_xAbmne5XhTI8wrcOAwRzQ';
 
-            $request = new Request(
-                'PUT',
-                $url,
-                [
-                    'Content-Type' => 'application/json',
-                    'Authorization' => ['Basic QVh1dGJuV0FHR3RIOEpfa215aUtJeHduV1FUUUNaX3RtemgwemNmaTJtVk5mZFVhcHZPOFVyNE5kMHo1QWRRNWJqeEhBZUZSMndtbUhJSjc6RUVWb0VnMDk0TkhCNzAwaHlNVjB1WFVVMnZFRE1LdWQ3dzUxR2c3SG1lVExQN1h0NkdRUldCNzljSUx4d1AxYU8tUnhoLUZETGg5aHNPVlI='],
-                ],
-                json_encode($data));
-            $response = $this->client->send($request);
+            $client = new \GuzzleHttp\Client(['base_uri' => $url]);
+            $headers = [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json',
+            ];
+
+            $response = $client->request(self::PUT, 'bar', [
+                'headers' => $headers
+            ]);
+
         } catch (\Exception $e) {
             print_r($e->getMessage()); die;
         }
