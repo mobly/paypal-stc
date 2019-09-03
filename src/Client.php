@@ -80,7 +80,7 @@ class Client extends AbstractClient
      */
     public function put($uri, $data)
     {
-        $url = $this->url . $uri;
+        $url = $this->getUrl() . $uri;
         $response = $this->client->request(
             self::PUT,
             $url,
@@ -97,7 +97,7 @@ class Client extends AbstractClient
      */
     public function get($uri)
     {
-        $url = $this->url . $uri;
+        $url = $this->getUrl() . $uri;
 
         $headers = [
             'Authorization' => 'Bearer ' . $this->token,
