@@ -24,7 +24,7 @@ $sender->setSenderFirstName('João')
     //other fields ...
 
 
-$receiver->setBusinessName($order->getBusinessName());
+$receiver->setBusinessName('Mobly');
 $receiver->setReceiverEmail('paypal@paypal.com');
 $receiver->setReceiverAccountId('paypal@paypal.com');
 $receiver->setReceiverAddressState('SP');

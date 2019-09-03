@@ -1,8 +1,7 @@
 <?php
 
 namespace Mobly\PaypalStc\Sdk;
-use PayPal\Core\PayPalConstants;
-use Zend_Http_Client;
+use GuzzleHttp\Psr7\Request;
 
 /**
  * Client class
@@ -44,6 +43,7 @@ class Client extends AbstractClient
     {
         $this->token = $token;
         $this->url = $url;
+        parent::__construct();
     }
 
     /**
@@ -81,20 +81,20 @@ class Client extends AbstractClient
      */
     public function put($uri, $data)
     {
-        $url = $this->getUrl() . $uri;
+        try {
+            $url = 'https://api.sandbox.paypal.com/v1/risk/transaction-contexts/4EQA63KMCLY2N/11844533335';
 
-        $headers = [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->token,
-                'Accept'        => 'application/json',
-            ]
-        ];
-
-        $response = $this->client->request(
-            self::PUT,
-            $url,
-            array_merge($headers, $data)
-        );
+            $request = new Request(
+                'PUT',
+                $url,
+                [
+                    'Authorization' => ['Basic QVh1dGJuV0FHR3RIOEpfa215aUtJeHduV1FUUUNaX3RtemgwemNmaTJtVk5mZFVhcHZPOFVyNE5kMHo1QWRRNWJqeEhBZUZSMndtbUhJSjc6RUVWb0VnMDk0TkhCNzAwaHlNVjB1WFVVMnZFRE1LdWQ3dzUxR2c3SG1lVExQN1h0NkdRUldCNzljSUx4d1AxYU8tUnhoLUZETGg5aHNPVlI='],
+                ],
+                json_encode($data));
+            $response = $this->client->send($request);
+        } catch (\Exception $e) {
+            print_r($e->getMessage()); die;
+        }
 
         return $response;
     }
