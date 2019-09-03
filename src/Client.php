@@ -2,6 +2,7 @@
 
 namespace Mobly\PaypalStc\Sdk;
 use PayPal\Core\PayPalConstants;
+use Zend_Http_Client;
 
 /**
  * Client class
@@ -81,10 +82,18 @@ class Client extends AbstractClient
     public function put($uri, $data)
     {
         $url = $this->getUrl() . $uri;
+
+        $headers = [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->token,
+                'Accept'        => 'application/json',
+            ]
+        ];
+
         $response = $this->client->request(
             self::PUT,
             $url,
-            [$data]
+            array_merge($headers, $data)
         );
 
         return $response;
