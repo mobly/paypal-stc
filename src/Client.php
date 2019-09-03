@@ -88,6 +88,7 @@ class Client extends AbstractClient
                 'PUT',
                 $url,
                 [
+                    'Content-Type' => 'application/json',
                     'Authorization' => ['Basic QVh1dGJuV0FHR3RIOEpfa215aUtJeHduV1FUUUNaX3RtemgwemNmaTJtVk5mZFVhcHZPOFVyNE5kMHo1QWRRNWJqeEhBZUZSMndtbUhJSjc6RUVWb0VnMDk0TkhCNzAwaHlNVjB1WFVVMnZFRE1LdWQ3dzUxR2c3SG1lVExQN1h0NkdRUldCNzljSUx4d1AxYU8tUnhoLUZETGg5aHNPVlI='],
                 ],
                 json_encode($data));
