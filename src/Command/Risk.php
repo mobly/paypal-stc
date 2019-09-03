@@ -56,7 +56,7 @@ class Risk
             $data
         );
 
-        $log['request'] = [
+        $log['response'] = [
             'title' => 'PayPalPlus risk response ' . $this->getUri(),
             'message' => $response,
             'file' => 'paypalplus_communication.log'
