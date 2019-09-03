@@ -1,10 +1,7 @@
 <?php
 
-
 namespace Mobly\PaypalStc\Sdk;
-
-
-
+use PayPal\Core\PayPalConstants;
 
 /**
  * Client class
@@ -17,11 +14,20 @@ namespace Mobly\PaypalStc\Sdk;
  */
 class Client extends AbstractClient
 {
+    /**
+     * Approval URL for Payment
+     */
+    const REST_LIVE_ENDPOINT = "https://api.sandbox.paypal.com/";
 
+    /**
+     * @var
+     */
     protected $token;
 
+    /**
+     * @var
+     */
     protected $url;
-
 
     /**
      * @var string
@@ -40,6 +46,14 @@ class Client extends AbstractClient
     }
 
     /**
+     * @return string
+     */
+    private function getUrl()
+    {
+        return self::REST_LIVE_ENDPOINT;
+    }
+
+    /**
      * @param $url
      * @param $data
      * @return mixed|\Psr\Http\Message\ResponseInterface
@@ -47,7 +61,7 @@ class Client extends AbstractClient
      */
     public function post($url, $data)
     {
-        $url = $this->url . $url;
+        $url = $this->getUrl() . $url;
         $response = $this->client->request(
             self::POST,
             $url,
@@ -100,9 +114,7 @@ class Client extends AbstractClient
 
     /**
      * @param $transaction
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return void
      */
     public function transaction($transaction){}
 
