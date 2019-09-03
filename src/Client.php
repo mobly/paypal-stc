@@ -2,6 +2,7 @@
 
 namespace Mobly\PaypalStc\Sdk;
 use GuzzleHttp\Psr7\Request;
+use Mobly\PaypalStc\Sdk\Exceptions;
 
 /**
  * Client class
@@ -78,16 +79,14 @@ class Client extends AbstractClient
      * @param $data
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
      */
     public function put($uri, $data)
     {
         try {
-            $url = 'https://api.sandbox.paypal.com/v1/risk/transaction-contexts/4EQA63KMCLY2N/11844533335';
-            $token = 'A21AAGwar4LkLz2pe9eAZ_AbXHQYowCRhXOxxT1uD8oaA23NzDeR-pK4xkWIh3_t0BWmLkjso8B_xAbmne5XhTI8wrcOAwRzQ';
-
-            $client = new \GuzzleHttp\Client(['base_uri' => $url]);
+            $client = new \GuzzleHttp\Client(['base_uri' => $uri]);
             $headers = [
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer ' . $this->token,
                 'Accept'        => 'application/json',
             ];
 
@@ -96,7 +95,9 @@ class Client extends AbstractClient
             ]);
 
         } catch (\Exception $e) {
-            print_r($e->getMessage()); die;
+            throw new \Exception($e);
+        } catch (\Throwable $e) {
+            throw new \Exception($e);
         }
 
         return $response;

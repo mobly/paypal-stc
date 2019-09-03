@@ -51,18 +51,30 @@ class Risk
             'file' => 'paypalplus_communication.log'
         ];
 
-        $response = $client->put(
-            $this->getUri(),
-            $data
-        );
-
         $log['response'] = [
             'title' => 'PayPalPlus risk response ' . $this->getUri(),
-            'message' => $response,
-            'file' => 'paypalplus_communication.log'
+            'message' => null,
+            'file' => 'paypalplus_communication.log',
+            'status' => null
         ];
+        $responseRisk = [];
 
-        return [$response, $log];
+        try {
+            $response = $client->put(
+                $this->getUri(),
+                $data
+            );
+
+            $log['response']['message'] = $response;
+            $responseRisk['status'] = $response->getStatusCode();
+            $responseRisk['message'] = $response->getBody();
+        } catch (\Exception $e) {
+            $responseRisk['status'] = $e->getCode();
+            $responseRisk['message'] = null;
+            $log['response']['message'] = $e->getMessage();
+        }
+
+        return [$responseRisk, $log];
     }
 
     /**
