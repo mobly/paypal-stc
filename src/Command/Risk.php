@@ -24,14 +24,21 @@ class Risk
     protected $trackingId;
 
     /**
+     * @var
+     */
+    protected $url;
+
+    /**
      * Risk constructor.
      * @param null $paypalPlusMerchantId
      * @param $trackingId
+     * @param $url
      */
-    public function __construct($paypalPlusMerchantId, $trackingId)
+    public function __construct($paypalPlusMerchantId, $trackingId, $url)
     {
         $this->merchantId = $paypalPlusMerchantId;
         $this->trackingId = $trackingId;
+        $this->url = $url;
     }
 
     /**
@@ -51,12 +58,6 @@ class Risk
             'file' => 'paypalplus_communication.log'
         ];
 
-        $log['response'] = [
-            'title' => 'PayPalPlus risk response ' . $this->getUri(),
-            'message' => null,
-            'file' => 'paypalplus_communication.log',
-            'status' => null
-        ];
         $responseRisk = [];
 
         try {
@@ -66,6 +67,14 @@ class Risk
             );
 
             $log['response']['message'] = $response;
+
+            $log['response'] = [
+                'title' => 'PayPalPlus risk response ' . $this->getUri(),
+                'message' => $log,
+                'file' => 'paypalplus_communication.log',
+                'status' => null
+            ];
+
             $responseRisk['status'] = $response->getStatusCode();
             $responseRisk['message'] = $response->getBody();
         } catch (\Exception $e) {
@@ -118,6 +127,6 @@ class Risk
      */
     public function getUri()
     {
-        return sprintf(self::ENDPOINT_V1, $this->merchantId, $this->trackingId);
+        return $this->url . sprintf(self::ENDPOINT_V1, $this->merchantId, $this->trackingId);
     }
 }

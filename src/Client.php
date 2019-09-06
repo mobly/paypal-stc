@@ -16,11 +16,6 @@ use Mobly\PaypalStc\Sdk\Exceptions;
 class Client extends AbstractClient
 {
     /**
-     * Approval URL for Payment
-     */
-    const REST_LIVE_ENDPOINT = "https://api.sandbox.paypal.com/";
-
-    /**
      * @var
      */
     protected $token;
@@ -84,13 +79,14 @@ class Client extends AbstractClient
     public function put($uri, $data)
     {
         try {
-            $client = new \GuzzleHttp\Client(['base_uri' => $uri]);
+            $client = new \GuzzleHttp\Client();
             $headers = [
                 'Authorization' => 'Bearer ' . $this->token,
                 'Accept'        => 'application/json',
             ];
 
-            $response = $client->request(self::PUT, 'bar', [
+            $response = $client->request(self::PUT, $uri, [
+                'json' => $data,
                 'headers' => $headers
             ]);
 
